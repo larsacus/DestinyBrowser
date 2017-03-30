@@ -22,10 +22,6 @@ app.set("view engine", "ejs");
 // Utilize 'public' directory
 app.use(express.static(__dirname + "/public"));
 
-app.get("/", function (req, res) {
-  res.send("This is the index");
-});
-
 var baseURL = "https://www.bungie.net";
 var db;
 
@@ -196,6 +192,12 @@ var hashKeys = {
   categoryHash: "DestinyVendorCategoryDefinition",
   vendorHash: "DestinyVendorDefinition",
 };
+
+app.get("/", function (req, res) {
+  res.render("index", {
+    paths: Object.keys(hashKeys),
+  });
+});
 
 app.get("/:typeHash/:id", function (req, res) {
 

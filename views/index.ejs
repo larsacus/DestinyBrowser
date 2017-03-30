@@ -1,0 +1,15 @@
+<% include partials/header %>
+
+<h1>Destiny Database Browser</h1>
+
+<p>A literal parsing and traversal of the bungie world asset database.</p>
+
+<h2>Databases</h2>
+
+<ul>
+  <% paths.forEach(function (path) { -%>
+  <li><a href="/<%= path %>"><%= path %></li>
+  <% }); -%>
+</ul>
+
+<% include partials/footer %>
