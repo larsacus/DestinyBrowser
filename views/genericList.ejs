@@ -2,11 +2,14 @@
 
 <h1>Listing <%= table %></h1>
 
+<div class="container">
 <ol start="<%= offset %>">
   <% items.forEach(function (item) { %>
     <li>
       <div>
-        <% if (item.icon && item.icon !== "") { %>
+        <% if (item.releaseIcon && item.releaseIcon !== "") { %>
+        <img src="https://bungie.net<%= item.releaseIcon %>">
+        <% } else if (item.icon && item.icon !== "") { %>
         <img src="https://bungie.net<%= item.icon %>">
         <% } else if (item.summary && item.summary[(resourceType + "Icon")]) { %>
         <img src="https://bungie.net<%= item.summary[(resourceType + "Icon")] %>">
@@ -50,6 +53,8 @@
             displayText = item[resourceType+"Identifier"];
           } else if (item.name) {
             displayText = item.name;
+          } else if (item.activityName) {
+            displayText = item.activityName;
           } else if (item.displayDescription) {
             displayText = item.displayDescription;
           } else if (item.contentIdentifier) {
@@ -58,19 +63,31 @@
 
           if (displayText) {
         %>
-        <p><%= displayText %></p>
+        
+
+        <%
+          var href;
+          if (item.sqlId) {
+            href=hashType + "/" + item.sqlId;
+          } else {
+            href=hashType + "/" + item.hash;
+          }
+        -%>
+
+        <a href="<%= hashType %>/<%= item.sqlId %>"><%= displayText %></a></p>
+        
         <% } %>
 
+
         </span>
-        <% if (item.sqlId) { %>
-        <button class="action"><a href="<%= hashType %>/<%= item.sqlId %>">Detail ></a>
-        <% } else { %>
-        <button class="action"><a href="<%= hashType %>/<%= item.hash %>">Detail ></a>
-        <% } %>
+        
+
+
       </div>
     </li>
   <% }) %>
 </ol>
+</div>
 
 <div id="bottom-nav">
 <% if (Number(offset) >= Number(limit)) { %>
