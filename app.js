@@ -33,6 +33,7 @@ var bungieDirectory = [__dirname, "bungieData"].join("/");
 var manifestFilePath = [bungieDirectory, "Manifest.json"].join("/");
 var sqlPath;
 var tableDefinitions = require('./data');
+var middleware = require("./middleware/middleware");
 
 // Attempt to find locally cached manifest
 var manifestContent = fs.open(manifestFilePath, 'r', function (err, fd) {
@@ -164,7 +165,7 @@ app.get("/", function (req, res) {
   });
 });
 
-app.get("/:typeHash/:id", validateTableName, function (req, res) {
+app.get("/:typeHash/:id", middleware.validateTableName, function (req, res) {
 
   var hashType = req.params.typeHash;
 
@@ -172,22 +173,12 @@ app.get("/:typeHash/:id", validateTableName, function (req, res) {
   handleTableWithIdResponse(tableDefinitions.tableForHashType(hashType), req, res);
 });
 
-app.get("/:typeHash", validateTableName, function (req, res) {
+app.get("/:typeHash", middleware.validateTableName, function (req, res) {
 
   var hashType = req.params.typeHash;
   // "/:typeHash/:id"
   handleTableResponse(tableDefinitions.tableForHashType(hashType), hashType, req, res);
 });
-
-function validateTableName(req, res, next) {
-  var hashType = req.params.typeHash;
-
-  if (tableDefinitions.tableForHashType(hashType)) {
-    next()
-  } else {
-    res.send("Unknown table translation for \"" + req.params.typeHash +"\"");
-  }
-}
 
 function handleTableWithIdResponse(table, req, res) {
   var sqlStatement = "SELECT * FROM " + table + " WHERE id = " + req.params.id + ";";
