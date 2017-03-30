@@ -1,20 +1,29 @@
 body {
   color: #333;
-  background: #7491B4;
+  background: #91B5D9;
   font-family: "Raleway";
 }
 
 .jumbotron {
-  background: #E9D58F;
+  background: #26537F;
+  color: #eee;
 }
 
 a {
-  color: #2D425B;
+  color: #333;
   text-decoration: none;
 }
 
+a:hover {
+  color: #5EAFFF;
+}
+
 a:visited {
-  color: #0F243C;
+  color: #556A7F;
+}
+
+h2 a {
+  color: #91B5D9;
 }
 
 /*li {
@@ -50,7 +59,7 @@ li img {
 }
 
 .navbar-default {
-  background-color: #2F517A;
+  background-color: #26537F;
   color: #eee;
 }
 
@@ -63,16 +72,11 @@ li img {
 }
 
 .item {
-  width: 140px;
-  height: 175px;
   text-align: center;
-  display: inline-block;
-  padding: 10px;
   margin: 3px;
-  border: 2px solid #E9AF8F;
-  background: #C48967;
-  border-radius: 4px;
-  float: left;
+  padding: 10px;
+  background: #26537F;
+  border-radius: 8px;
 }
 
 .item img {
@@ -82,6 +86,24 @@ li img {
 
 .item p {
   word-wrap: break-word;
+  min-height: 3em;
+  overflow: hidden;
+  margin: 5px;
+  color: #eee;
+}
+
+.index-item {
+  margin: 4px;
+  box-sizing: content-box;
+  height: 10em;
+}
+
+.index-item p {
+  min-height: 3em;
+}
+
+.index-item h2 {
+  text-transform: capitalize;
 }
 
 #bottom-nav {

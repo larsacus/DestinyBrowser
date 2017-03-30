@@ -10,11 +10,14 @@
 
   <h2>Tables</h2>
 
-  <div class="container">
-    <% paths.forEach(function (path) { -%>
-      <div class="item"><a href="/<%= path %>"><%= path.replace("Hash","") %></a></div>
+    <% descriptions.forEach(function (description) { -%>
+      <div class="col-md-6">
+        <div class="index-item well">
+          <h2><a href="/<%= description.hashName %>"><%= description.hashName.replace("Hash","") %></a></h2>
+          <p><%= description.description %></p>
+        </div>
+      </div>
     <% }); -%>
-  </div>
   
 </div>
 

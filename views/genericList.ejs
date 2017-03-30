@@ -3,9 +3,11 @@
 <div class="container">
 <h1><%= table %></h1>
 <div>
+<div class="list">
   <% items.forEach(function (item) { %>
-    <div class="list">
-      <div class="item well">
+    
+      <div class="col-md-2 col-sm-4 col-xs-6">
+      <div class="item">
       <%
           var href;
           if (item.sqlId) {
@@ -17,12 +19,16 @@
 
         <a href="<%= hashType %>/<%= item.hash %>">
 
-          <% if (item.releaseIcon && item.releaseIcon !== "") { %>
-          <img src="https://bungie.net<%= item.releaseIcon %>">
-          <% } else if (item.icon && item.icon !== "") { %>
+          <% if (item.icon && item.icon !== "") { %>
           <img src="https://bungie.net<%= item.icon %>">
+          <% } else if (item.releaseIcon && item.releaseIcon !== "") { %>
+          <img src="https://bungie.net<%= item.releaseIcon %>">
+          <% } else if (item.displayIcon && item.displayIcon !== "") { %>
+          <img src="https://bungie.net<%= item.displayIcon %>">
           <% } else if (item.summary && item.summary[(resourceType + "Icon")]) { %>
           <img src="https://bungie.net<%= item.summary[(resourceType + "Icon")] %>">
+          <% } else if (item.summary && item.summary.vendorIcon) { %>
+          <img src="https://bungie.net<%= item.summary.vendorIcon %>">
           <% } else if (item[(resourceType + "Icon")]) { %>
           <img src="https://bungie.net<%= item[(resourceType + "Icon")] %>">
           <% } else if (item.iconPath) { %>
@@ -69,6 +75,12 @@
               displayText = item.displayDescription;
             } else if (item.contentIdentifier) {
               displayText = item.contentIdentifier;
+            } else if (item.bookName) {
+              displayText = item.bookName;
+            } else if (item.raceName) {
+              displayText = item.raceName;
+            } else if (item.bucketName) {
+              displayText = item.bucketName;
             } else {
               displayText = "Unknown";
             }
@@ -84,8 +96,10 @@
 
 
       </div>
-    </div>
+      </div>
+    
   <% }) %>
+  </div><!-- list -->
 </div>
 </div>
 

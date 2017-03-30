@@ -22,17 +22,17 @@ app.set("view engine", "ejs");
 // Utilize 'public' directory
 app.use(express.static(__dirname + "/public"));
 
-var baseURL = "https://www.bungie.net";
-var db;
-
 // Config `request` package defaults
 var baseRequest = request.defaults({
   baseUrl: baseURL
 });
 
+var baseURL = "https://www.bungie.net";
+var db;
 var bungieDirectory = [__dirname, "bungieData"].join("/");
 var manifestFilePath = [bungieDirectory, "Manifest.json"].join("/");
 var sqlPath;
+var tableDefinitions = require('./data');
 
 // Attempt to find locally cached manifest
 var manifestContent = fs.open(manifestFilePath, 'r', function (err, fd) {
@@ -87,6 +87,25 @@ function refreshManifest() {
   });
 }
 
+function downloadDatabase(databaseURL) {
+  // Download new database zip file
+  baseRequest(databaseURL, function (error, response, body) {
+    if (error) {
+      console.log("Error downloading zip file: " + error);
+    } else {
+      console.log("Completed zip file download request");
+    }
+  })
+  .pipe(unzip.Extract({ path: bungieDirectory }))
+  .on('close', function (src) {
+    // Unzip file on write stream close
+    console.log("Completed unzipping to " + bungieDirectory);
+
+    // Open up a new database using unzipped file
+    openDatabase(sqlPath);
+  });
+}
+
 function handleUpdatedManifest(body) {
   var databaseZipURL = databaseZipURLFromManifest(body);
   sqlPath = databasePathFromManifest(body);
@@ -119,25 +138,6 @@ function saveManifestToDisk(manifestContent) {
   });
 }
 
-function downloadDatabase(databaseURL) {
-  // Download new database zip file
-  baseRequest(databaseURL, function (error, response, body) {
-    if (error) {
-      console.log("Error downloading zip file: " + error);
-    } else {
-      console.log("Completed zip file download request");
-    }
-  })
-  .pipe(unzip.Extract({ path: bungieDirectory }))
-  .on('close', function (src) {
-    // Unzip file on write stream close
-    console.log("Completed unzipping to " + bungieDirectory);
-
-    // Open up a new database using unzipped file
-    openDatabase(sqlPath);
-  });
-}
-
 function openDatabase(sqlPath) {
   console.log("Path of SQL database: " + sqlPath);
   db = new sqlite3.Database(sqlPath, sqlite3.OPEN_READONLY, function (dbErr) {
@@ -157,61 +157,40 @@ function openDatabase(sqlPath) {
   });
 }
 
-var hashKeys = {
-  bundleHash: "DestinyActivityBundleDefinition", // [activityBundleHashes]
-  activityHash: "DestinyActivityDefinition", // [activityHashes]
-  activityTypeHash: "DestinyActivityTypeDefinition",
-  classHash: "DestinyClassDefinition",                   
-  combatantHash: "DestinyCombatantDefinition",                   
-  damageTypeHash: "DestinyDamageTypeDefinition",            
-  destinationHash: "DestinyDestinationDefinition",
-  directorBookHash: "DestinyDirectorBookDefinition",  //bookHash (internally)
-  raceHash: "DestinyEnemyRaceDefinition",             
-  factionHash: "DestinyFactionDefinition",                       
-  genderHash: "DestinyGenderDefinition",                   
-  tierHash: "DestinyMedalTierDefinition", // Unknown if correct hash key
-  bucketHash: "DestinyInventoryBucketDefinition",     
-  bucketTypeHash: "DestinyInventoryBucketDefinition",     
-  itemHash: "DestinyInventoryItemDefinition",               
-  itemCategoryHash: "DestinyItemCategoryDefinition", // [itemCategoryHashes]
-  locationHash: "DestinyLocationDefinition",
-  objectiveHash: "DestinyObjectiveDefinition",
-  placeHash: "DestinyPlaceDefinition",
-  progressionHash: "DestinyProgressionDefinition",
-  raceHash: "DestinyRaceDefinition",
-  recordHash: "DestinyRecordDefinition",
-  rewardSourceHash: "DestinyRewardSourceDefinition", // [sourceHashes]
-  sourceHash: "DestinyVendorDefinition", // [sourceHashes]
-  perkHash: "DestinySandboxPerkDefinition",
-  skullHash: "DestinyScriptedSkullDefinition",
-  eventHash: "DestinySpecialEventDefinition",
-  statHash: "DestinyStatDefinition",
-  // primaryBaseStatHash: "DestinyStatGroupDefinition",
-  statGroupHash: "DestinyStatGroupDefinition",
-  talentGridHash: "DestinyTalentGridDefinition",
-  triumphSetHash: "DestinyTriumphSetDefinition",
-  flagHash: "DestinyUnlockFlagDefinition", // unlockFlagHash
-  categoryHash: "DestinyVendorCategoryDefinition",
-  vendorHash: "DestinyVendorDefinition",
-};
-
 app.get("/", function (req, res) {
   res.render("index", {
-    paths: Object.keys(hashKeys),
+    paths: Object.keys(tableDefinitions.hashKeys),
+    descriptions: tableDefinitions.tableDescriptions,
   });
 });
 
-app.get("/:typeHash/:id", function (req, res) {
+app.get("/:typeHash/:id", validateTableName, function (req, res) {
+
+  var hashType = req.params.typeHash;
 
   // "/:typeHash/:id"
+  handleTableWithIdResponse(tableDefinitions.tableForHashType(hashType), req, res);
+});
+
+app.get("/:typeHash", validateTableName, function (req, res) {
+
   var hashType = req.params.typeHash;
-  console.log("type: " + hashType);
+  // "/:typeHash/:id"
+  handleTableResponse(tableDefinitions.tableForHashType(hashType), hashType, req, res);
+});
 
-  var table = hashKeys[hashType];
-  console.log("table: " + table);
+function validateTableName(req, res, next) {
+  var hashType = req.params.typeHash;
 
-  if (table) {
-    var sqlStatement = "SELECT * FROM " + table + " WHERE id = " + req.params.id + ";";
+  if (tableDefinitions.tableForHashType(hashType)) {
+    next()
+  } else {
+    res.send("Unknown table translation for \"" + req.params.typeHash +"\"");
+  }
+}
+
+function handleTableWithIdResponse(table, req, res) {
+  var sqlStatement = "SELECT * FROM " + table + " WHERE id = " + req.params.id + ";";
 
     console.time(sqlStatement);
     db.get(sqlStatement, function (err, row) {
@@ -234,24 +213,10 @@ app.get("/:typeHash/:id", function (req, res) {
         res.send("No rows found for \"" + sqlStatement + "\"");
       }
     });
-  } else {
-    res.send("Unknown table translation for \"" + req.params.typeHash +"\"");
-  }
+}
 
-  
-});
-
-app.get("/:typeHash", function (req, res) {
-
-  // "/:typeHash/:id"
-  var hashType = req.params.typeHash;
-  console.log("type: " + hashType);
-
-  var table = hashKeys[hashType];
-  console.log("table: " + table);
-
-  if (table) {
-    var sqlStatements = [
+function handleTableResponse(table, hashType, req, res) {
+  var sqlStatements = [
       "SELECT * FROM " + table,
       // "WHERE id > 0",
     ];
@@ -296,56 +261,17 @@ app.get("/:typeHash", function (req, res) {
           limit: req.query.limit,
           hashType: hashType,
           pageUrl: url.parse(req.url).pathname,
-          resourceType: url.parse(req.url).pathname.split("/").filter((item)=>{return item.length >0})[0].replace("Hash", "")
+          resourceType: url.parse(req.url).pathname.split("/").filter((item)=>{return item.length >0})[0].replace("Hash", ""),
+          descriptions: tableDefinitions.tableDescriptions,
         }); 
       }
     });
-  } else {
-    res.send("Unknown table translation for \"" + req.params.typeHash +"\"");
-  }
-});
-
-
-// : "DestinyActivityCategoryDefinition", // What is "parentHashes"?
-// : "DestinyActivityModeDefinition",  
-// : "DestinyBondDefinition", 
-// : "DestinyGrimoireCardDefinition",            
-// : "DestinyGrimoireDefinition",                
-// : "DestinyHistoricalStatsDefinition", // pretty sure only usable with user data
-// : "DestinyRecordBookDefinition",
-
-
-// Unknown:
-//   questItemHashes
-//   nodeDefinitionHash -- from DestinyDirectorBookDefinition.nodes
-//   styleHash -- from DestinyDirectorBookDefinition.nodes
-//   flagHash -- DestinyDirectorBookDefinition.isVisibleExpression.steps
-//   bucketTypeHash -- DestinyInventoryItemDefinition
-//   primaryBaseStatHash -- DestinyInventoryItemDefinition
-//   perkHashes -- DestinyInventoryItemDefinition
-//   channelHash -- DestinyInventoryItemDefinition.equippingBlock.defaultDyes
-//   dyeHash -- DestinyInventoryItemDefinition.equippingBlock.defaultDyes
-//   flagHash -- DestinyInventoryItemDefinition.customDyeExpression.steps
-//   valueHash -- DestinyInventoryItemDefinition.customDyeExpression.steps
-//   weaponPatternHash -- DestinyInventoryItemDefinition
-//   equipmentSlotHash -- DestinyInventoryItemDefinition
-//   rewardItemHash -- DestinyInventoryItemDefinition
-//   setItemHashes -- DestinyInventoryItemDefinition
-//   questlineItemHash -- DestinyInventoryItemDefinition
-//   uniquenessHash -- DestinyInventoryItemDefinition
-//   activityGraphHash -- DestinyLocationDefinition
-//   activityGraphNodeHash -- DestinyLocationDefinition
-//   unlockValueHash -- DestinyObjectiveDefinition
-//   bountyHashes -- DestinySpecialEventDefinition
-//   questHashes -- DestinySpecialEventDefinition
-
-// Some IDs don't match the id column in the database -- these are outdated or deprecated objects
-
+}
 
 // =========================
 //      START SERVER
 // =========================
-app.listen(process.env.PORT, process.env.IP, function() {
-// app.listen(3000, function() {
+// app.listen(process.env.PORT, process.env.IP, function() {
+app.listen(3000, function() {
   console.log("Destiny Explorer Server Initialized at localhost:3000!");
 });
