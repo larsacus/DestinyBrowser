@@ -4,6 +4,7 @@ var express = require("express"),
     fs = require("fs"),
     unzip = require("unzip"),
     sqlite3 = require('sqlite3').verbose(),
+    url = require('url'), // built-in utility
     app = express();
 
 // =========================
@@ -172,6 +173,7 @@ var hashKeys = {
   genderHash: "DestinyGenderDefinition",                   
   tierHash: "DestinyMedalTierDefinition", // Unknown if correct hash key
   bucketHash: "DestinyInventoryBucketDefinition",     
+  bucketTypeHash: "DestinyInventoryBucketDefinition",     
   itemHash: "DestinyInventoryItemDefinition",               
   itemCategoryHash: "DestinyItemCategoryDefinition", // [itemCategoryHashes]
   locationHash: "DestinyLocationDefinition",
@@ -180,11 +182,13 @@ var hashKeys = {
   progressionHash: "DestinyProgressionDefinition",
   raceHash: "DestinyRaceDefinition",
   recordHash: "DestinyRecordDefinition",
-  sourceHash: "DestinyRewardSourceDefinition", // [sourceHashes]
+  rewardSourceHash: "DestinyRewardSourceDefinition", // [sourceHashes]
+  sourceHash: "DestinyVendorDefinition", // [sourceHashes]
   perkHash: "DestinySandboxPerkDefinition",
   skullHash: "DestinyScriptedSkullDefinition",
   eventHash: "DestinySpecialEventDefinition",
   statHash: "DestinyStatDefinition",
+  // primaryBaseStatHash: "DestinyStatGroupDefinition",
   statGroupHash: "DestinyStatGroupDefinition",
   talentGridHash: "DestinyTalentGridDefinition",
   triumphSetHash: "DestinyTriumphSetDefinition",
@@ -202,20 +206,94 @@ app.get("/:typeHash/:id", function (req, res) {
   var table = hashKeys[hashType];
   console.log("table: " + table);
 
-  var sqlStatement = "SELECT * FROM " + table + " WHERE id = " + req.params.id + ";";
+  if (table) {
+    var sqlStatement = "SELECT * FROM " + table + " WHERE id = " + req.params.id + ";";
 
-  db.get(sqlStatement, function (err, row) {
-    if (err) {
-      console.log("Error: " + err);
-    } else {
-      var json = JSON.parse(row.json);
-      var jsonString = JSON.stringify(json);
-      
-      res.send(jsonString); 
-    }
-  });
+    console.time(sqlStatement);
+    db.get(sqlStatement, function (err, row) {
+
+      console.timeEnd(sqlStatement);
+      if (err) {
+        console.log("Error: " + err);
+        res.send("Error: " + err);
+      } else if (row) {
+        var json = JSON.parse(row.json);
+        var jsonString = JSON.stringify(json);
+
+        res.send(jsonString);
+      } else {
+        res.send("No rows found for \"" + sqlStatement + "\"");
+      }
+    });
+  } else {
+    res.send("Unknown table translation for \"" + req.params.typeHash +"\"");
+  }
 
   
+});
+
+app.get("/:typeHash", function (req, res) {
+
+  // "/:typeHash/:id"
+  var hashType = req.params.typeHash;
+  console.log("type: " + hashType);
+
+  var table = hashKeys[hashType];
+  console.log("table: " + table);
+
+  if (table) {
+    var sqlStatements = [
+      "SELECT * FROM " + table,
+      // "WHERE id > 0",
+    ];
+
+    if (req.query.limit) {
+      sqlStatements.push("LIMIT " + req.query.limit);
+    } else {
+      res.redirect(req.url + "?limit=25");
+      return;
+    }
+
+    if (req.query.offset) {
+      sqlStatements.push("OFFSET " + req.query.offset);
+    }
+
+    var sqlStatement = sqlStatements.join(" ") + ";";
+    console.log("Executing SQL: \"" + sqlStatement + "\"");
+
+    console.time(sqlStatement);
+    db.all(sqlStatement, function (err, rows) {
+      if (err) {
+        console.log("Error: " + err);
+        res.send("Error: " + err);
+      } else {
+
+        var rowsJSON = [];
+        rows.forEach(function (row) {
+          var json = JSON.parse(row.json);
+          // var jsonString = JSON.stringify(json);
+          json.sqlId = row.id;
+          rowsJSON.push(json);
+        });
+
+        console.timeEnd(sqlStatement);
+
+        console.log(url.parse(req.url).pathname);
+        
+        res.render("genericList", {
+          table: table,
+          items: rowsJSON,
+          offset: req.query.offset,
+          limit: req.query.limit,
+          hashType: hashType,
+          pageUrl: url.parse(req.url).pathname,
+          resourceType: url.parse(req.url).pathname.split("/").filter((item)=>{return item.length >0})[0].replace("Hash", "")
+        }); 
+      }
+    });
+  } else {
+    res.send("Unknown table translation for \"" + req.params.typeHash +"\"");
+  }
 });
 
 

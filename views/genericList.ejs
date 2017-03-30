@@ -1,0 +1,87 @@
+<% include partials/header %>
+
+<h1>Listing <%= table %></h1>
+
+<ol start="<%= offset %>">
+  <% items.forEach(function (item) { %>
+    <li>
+      <div>
+        <% if (item.icon && item.icon !== "") { %>
+        <img src="https://bungie.net<%= item.icon %>">
+        <% } else if (item.summary && item.summary[(resourceType + "Icon")]) { %>
+        <img src="https://bungie.net<%= item.summary[(resourceType + "Icon")] %>">
+        <% } else if (item[(resourceType + "Icon")]) { %>
+        <img src="https://bungie.net<%= item[(resourceType + "Icon")] %>">
+        <% } else if (item.iconPath) { %>
+        <img src="https://bungie.net<%= item.iconPath %>">
+        <% } else if (item.secondaryIcon) { %>
+        <img src="https://bungie.net<%= item.secondaryIcon %>">
+        <% } else { %>
+        <img src="https://bungie.net/img/misc/missing_icon.png">
+        <% } %>
+
+        <span class="content">
+        <%
+          var alternateResourceType;
+          if (resourceType === "source") {
+            alternateResourceType = "vendor";
+          }
+          var resourceNameKey = (resourceType + "Name"),
+              resourceName = item[resourceNameKey];
+          var alternateResourceNameKey = (alternateResourceType + "Name"),
+              alternateResourceName = item[alternateResourceNameKey];
+              
+          var displayText;
+          if (item.summary && item.summary[resourceNameKey]) {
+            displayText = item.summary[resourceNameKey];
+          } else if (resourceName) {
+            displayText = resourceName;
+          } else if (item.sourceName) {
+            displayText = item.sourceName;
+          } else if (item.title) {
+            displayText = item.title;
+          } else if (item.displayName) {
+            displayText = item.displayName;
+          } else if (alternateResourceName) {
+            displayText = alternateResourceName;
+          } else if (item.summary && item.summary[alternateResourceNameKey]) {
+            displayText = item.summary[alternateResourceNameKey];
+          } else if (item[resourceType+"Identifier"]) {
+            displayText = item[resourceType+"Identifier"];
+          } else if (item.name) {
+            displayText = item.name;
+          } else if (item.displayDescription) {
+            displayText = item.displayDescription;
+          } else if (item.contentIdentifier) {
+            displayText = item.contentIdentifier;
+          }
+
+          if (displayText) {
+        %>
+        <p><%= displayText %></p>
+        <% } %>
+
+        </span>
+        <% if (item.sqlId) { %>
+        <button class="action"><a href="<%= hashType %>/<%= item.sqlId %>">Detail ></a>
+        <% } else { %>
+        <button class="action"><a href="<%= hashType %>/<%= item.hash %>">Detail ></a>
+        <% } %>
+      </div>
+    </li>
+  <% }) %>
+</ol>
+
+<div id="bottom-nav">
+<% if (Number(offset) >= Number(limit)) { %>
+  <a href="<%= pageUrl %>?offset=<%= (Number(offset)-Number(limit)) %>&limit=<%=limit%>">< Prev</a>
+<% } %>
+
+<% if (items.length >= limit && offset) { %>
+<a href="<%= pageUrl %>?offset=<%= (Number(offset)+Number(limit)) %>&limit=<%=limit%>">Next ></a>
+<% } else if (items.length >= limit) { %>
+<a href="<%= pageUrl %>?offset=<%= limit %>&limit=<%=limit%>">Next ></a>
+<% } %>
+</div>
+
+<% include partials/footer %>

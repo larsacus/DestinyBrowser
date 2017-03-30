@@ -1,0 +1,28 @@
+li {
+  vertical-align: middle;
+  display: inline-block;
+  width: 150px;
+  text-align: center;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  margin: 3px;
+  padding: 4px 0px;
+}
+
+li p {
+  min-height: 2em;
+  word-wrap: break-word;
+}
+
+li img {
+  margin: auto;
+  max-width: 100%;
+  display: block;
+  width: 96px;
+  height: 96px;
+  background: lightgray;
+}
+
+#bottom-nav {
+  text-align: center;
+}
