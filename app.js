@@ -223,6 +223,11 @@ app.get("/:typeHash/:id", function (req, res) {
         var jsonString = JSON.stringify(json);
 
         res.send(jsonString);
+      } else if (Number(req.params.id) > 0) { // This is a hack for when json id's don't match sql column ids
+        // Try again with a converted signed hash -(-original >>> 0)
+        const redirect = "/" + req.params.typeHash + "/" + (-(-Number(req.params.id) >>> 0));
+        console.log("Redirecting to \"" + redirect + "\"");
+        res.redirect(redirect);
       } else {
         res.send("No rows found for \"" + sqlStatement + "\"");
       }
