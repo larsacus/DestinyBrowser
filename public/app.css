@@ -1,16 +1,20 @@
+ol {
+
+}
+
 li {
-  vertical-align: middle;
+  /*vertical-align: middle;*/
   display: inline-block;
   width: 150px;
   text-align: center;
-  border: 1px solid #eee;
-  border-radius: 3px;
+  /*border: 1px solid #eee;*/
+  /*border-radius: 3px;*/
   margin: 3px;
   padding: 4px 0px;
 }
 
-li p {
-  min-height: 2em;
+.content a {
+  min-height: 3em;
   word-wrap: break-word;
 }
 
@@ -21,6 +25,10 @@ li img {
   width: 96px;
   height: 96px;
   background: lightgray;
+}
+
+.container {
+  margin: auto 0;
 }
 
 #bottom-nav {
