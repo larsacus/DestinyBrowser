@@ -1,21 +1,28 @@
-ol {
-
+body {
+  color: #333;
+  background: #7491B4;
+  font-family: "Raleway";
 }
 
-li {
-  /*vertical-align: middle;*/
+.jumbotron {
+  background: #E9D58F;
+}
+
+a {
+  color: #2D425B;
+  text-decoration: none;
+}
+
+a:visited {
+  color: #0F243C;
+}
+
+/*li {
   display: inline-block;
   width: 150px;
   text-align: center;
-  /*border: 1px solid #eee;*/
-  /*border-radius: 3px;*/
   margin: 3px;
   padding: 4px 0px;
-}
-
-.content a {
-  min-height: 3em;
-  word-wrap: break-word;
 }
 
 li img {
@@ -24,13 +31,60 @@ li img {
   display: block;
   width: 98px;
   height: 98px;
-  background: lightgray;
 }
 
 .container {
   margin: auto 0;
+}*/
+
+.navbar {
+  border-radius: 0;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 1px solid rgba(1,1,1,0.33);
+}
+
+.navbar-default .navbar-brand {
+  color: #eee;
+}
+
+.navbar-default {
+  background-color: #2F517A;
+  color: #eee;
+}
+
+.navbar-default .navbar-nav>li>a {
+  color: #eee;
+}
+
+.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover {
+  color: #333;
+}
+
+.item {
+  width: 140px;
+  height: 175px;
+  text-align: center;
+  display: inline-block;
+  padding: 10px;
+  margin: 3px;
+  border: 2px solid #E9AF8F;
+  background: #C48967;
+  border-radius: 4px;
+  float: left;
+}
+
+.item img {
+  width: 98px;
+  height: 98px;
+}
+
+.item p {
+  word-wrap: break-word;
 }
 
 #bottom-nav {
   text-align: center;
+  padding: 1em;
 }

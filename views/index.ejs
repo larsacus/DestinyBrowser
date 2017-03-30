@@ -1,15 +1,21 @@
 <% include partials/header %>
 
-<h1>Destiny Database Browser</h1>
+<div class="container">
+  <div class="jumbotron">
+  <h1>Destiny Database Browser</h1>
 
-<p>A literal parsing and traversal of the bungie world asset database.</p>
+  <p>A literal parsing and traversal of the bungie world asset database.</p>
 
-<h2>Databases</h2>
+  </div>
 
-<ul>
-  <% paths.forEach(function (path) { -%>
-  <li><a href="/<%= path %>"><%= path %></li>
-  <% }); -%>
-</ul>
+  <h2>Tables</h2>
+
+  <div class="container">
+    <% paths.forEach(function (path) { -%>
+      <div class="item"><a href="/<%= path %>"><%= path.replace("Hash","") %></a></div>
+    <% }); -%>
+  </div>
+  
+</div>
 
 <% include partials/footer %>

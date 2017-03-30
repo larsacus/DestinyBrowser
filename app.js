@@ -48,6 +48,8 @@ var manifestContent = fs.open(manifestFilePath, 'r', function (err, fd) {
   }
 });
 
+// refreshManifest();
+
 function databaseZipURLFromManifest(manifestData) {
   var mobileWorldContentPaths = manifestData.Response.mobileWorldContentPaths.en;
 
@@ -112,7 +114,7 @@ function saveManifestToDisk(manifestContent) {
     if(err) {
       console.log(err);
     } else {
-      console.log("The file was saved to \""+ path +"\"!");
+      console.log("The file was saved to \""+ manifestFilePath +"\"!");
     }
   });
 }
