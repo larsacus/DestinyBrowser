@@ -4,6 +4,10 @@ body {
   font-family: "Raleway";
 }
 
+.container {
+  margin-top: 0;
+}
+
 /*.jumbotron {
   background: #26537F;
   color: #eee;
@@ -115,6 +119,13 @@ footer {
   margin-top: 10px;
   margin-bottom: 15px;
   text-align: center;
+}
+
+.light {
+  color: #eee;
+  text-shadow: 0px 4px 3px rgba(0,0,0,0.5),
+               0px 8px 13px rgba(0,0,0,0.2),
+               0px 18px 18px rgba(0,0,0,0.15);
 }
 
 .attribution {

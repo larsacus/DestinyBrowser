@@ -1,7 +1,23 @@
 <% include partials/header %>
 
 <div class="container">
-<%= item %>
-</div>
+  <div class="jumbotron light" style="background-size: cover; background-image: url(https://bungie.net<%= item.pgcrImage %>);">
+  <h1><img src="https://bungie.net<%=item.icon%>" style="height: 0.8em;position: relative; bottom: 0.05em;">&nbsp;<%=item.activityName%></h1>
+  <p><%=item.activityDescription%></p>
+  </div> <!-- jumbotron -->
+  <div class="json">
+    <%
+    Object.keys(item).forEach(function (key) {
+      if (paths.includes(key)) { %>
+      <div><a href="/<%=key%>/<%=item[key]%>"><%= key %>: <%= item[key] %></a></div>
+    <%} else {
+    %>
+      <div><%= key %>: <%= item[key] %> </div>
+    <% 
+      }
+    });
+    %>
+  </div>
+</div> <!-- container -->
 
 <% include partials/footer %>

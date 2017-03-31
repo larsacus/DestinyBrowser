@@ -15,6 +15,7 @@ var tableDefinitions = require("./data");
 
 app.use(function(req, res, next) {
   res.locals.descriptions = tableDefinitions.tableDescriptions;
+  res.locals.paths = Object.keys(tableDefinitions.hashKeys);
   next();
 });
 

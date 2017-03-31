@@ -11,9 +11,7 @@ const tailoredHashPages = [
 module.exports = function (database) {
 
   router.get("/", function (req, res) {
-    res.render("index", {
-      paths: Object.keys(tableDefinitions.hashKeys),
-    });
+    res.render("index");
   });
 
   router.get("/:typeHash/:id", middleware.validateTableName, function (req, res) {
