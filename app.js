@@ -66,7 +66,7 @@ app.use(genericRoutes);
 // =========================
 //      START SERVER
 // =========================
-// app.listen(process.env.PORT, process.env.IP, function() {
-app.listen(3000, function() {
+app.listen(process.env.PORT, process.env.IP, function() {
+// app.listen(3000, function() {
   console.log("Destiny Explorer Server Initialized at localhost:3000!");
 });
