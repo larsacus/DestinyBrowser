@@ -7,101 +7,112 @@
   <% items.forEach(function (item) { %>
     
       <div class="col-md-2 col-sm-4 col-xs-6">
-      <div class="item">
-      <%
-          var href;
-          if (item.sqlId) {
-            href=hashType + "/" + item.sqlId;
-          } else {
-            href=hashType + "/" + item.hash;
+        <div class="item">
+          <%
+            var href;
+            if (item.sqlId) {
+              href=hashType + "/" + item.sqlId;
+            } else {
+              href=hashType + "/" + item.hash;
+            }
+          -%>
+
+          <a href="<%= hashType %>/<%= item.hash %>">
+
+          <%
+          var tries = ["icon", "releaseIcon", "displayIcon", (resourceType + "Icon"), "iconPath", "secondaryIcon"];
+          var summaryTries = [(resourceType + "Icon"), "vendorIcon"];
+
+          var relSrc;
+          for (var i in tries) {
+            var keyTry = tries[i];
+            relSrc = item[keyTry];
+            if (relSrc && (relSrc.length > 0) && !relSrc.includes("missing_icon")) {
+              break;
+            } else {
+              relSrc = null;
+            }
           }
-        -%>
 
-        <a href="<%= hashType %>/<%= item.hash %>">
+          if (!relSrc && item.summary) {
+            for (var i in summaryTries) {
+              var keyTry = summaryTries[i];
+              relSrc = item.summary[keyTry];
+              if (relSrc && (relSrc.length > 0) && !relSrc.includes("missing_icon")) {
+                break;
+              } else {
+                relSrc = null;
+              }
+            }
+          }
 
-          <% if (item.icon && item.icon !== "") { %>
-          <img src="https://bungie.net<%= item.icon %>">
-          <% } else if (item.releaseIcon && item.releaseIcon !== "") { %>
-          <img src="https://bungie.net<%= item.releaseIcon %>">
-          <% } else if (item.displayIcon && item.displayIcon !== "") { %>
-          <img src="https://bungie.net<%= item.displayIcon %>">
-          <% } else if (item.summary && item.summary[(resourceType + "Icon")]) { %>
-          <img src="https://bungie.net<%= item.summary[(resourceType + "Icon")] %>">
-          <% } else if (item.summary && item.summary.vendorIcon) { %>
-          <img src="https://bungie.net<%= item.summary.vendorIcon %>">
-          <% } else if (item[(resourceType + "Icon")]) { %>
-          <img src="https://bungie.net<%= item[(resourceType + "Icon")] %>">
-          <% } else if (item.iconPath) { %>
-          <img src="https://bungie.net<%= item.iconPath %>">
-          <% } else if (item.secondaryIcon) { %>
-          <img src="https://bungie.net<%= item.secondaryIcon %>">
-          <% } else { %>
-          <img src="https://bungie.net/img/misc/missing_icon.png">
-          <% } %>
+          var imageHref;
+          if (relSrc) {
+            imageHref = ["https://bungie.net", relSrc].join("/");
+          } else {
+            imageHref = "https://bungie.net/img/misc/missing_icon.png";
+          }
+           -%>
 
+          <img src="<%= imageHref %>">
           
           <%
-            var alternateResourceType;
-            if (resourceType === "source") {
-              alternateResourceType = "vendor";
-            }
-            var resourceNameKey = (resourceType + "Name"),
-                resourceName = item[resourceNameKey];
-            var alternateResourceNameKey = (alternateResourceType + "Name"),
-                alternateResourceName = item[alternateResourceNameKey];
-                
-            var displayText;
-            if (item.summary && item.summary[resourceNameKey]) {
-              displayText = item.summary[resourceNameKey];
-            } else if (resourceName) {
-              displayText = resourceName;
-            } else if (item.sourceName) {
-              displayText = item.sourceName;
-            } else if (item.title) {
-              displayText = item.title;
-            } else if (item.displayName) {
-              displayText = item.displayName;
-            } else if (alternateResourceName) {
-              displayText = alternateResourceName;
-            } else if (item.summary && item.summary[alternateResourceNameKey]) {
-              displayText = item.summary[alternateResourceNameKey];
-            } else if (item[resourceType+"Identifier"]) {
-              displayText = item[resourceType+"Identifier"];
-            } else if (item.name) {
-              displayText = item.name;
-            } else if (item.activityName) {
-              displayText = item.activityName;
-            } else if (item.displayDescription) {
-              displayText = item.displayDescription;
-            } else if (item.contentIdentifier) {
-              displayText = item.contentIdentifier;
-            } else if (item.bookName) {
-              displayText = item.bookName;
-            } else if (item.raceName) {
-              displayText = item.raceName;
-            } else if (item.bucketName) {
-              displayText = item.bucketName;
-            } else {
-              displayText = "Unknown";
-            }
+          var alternateResourceType;
+          if (resourceType === "source") {
+            alternateResourceType = "vendor";
+          }
+          var resourceNameKey = (resourceType + "Name"),
+              resourceName = item[resourceNameKey];
+          var alternateResourceNameKey = (alternateResourceType + "Name"),
+              alternateResourceName = item[alternateResourceNameKey];
+              
+          var displayText;
+          if (item.summary && item.summary[resourceNameKey]) {
+            displayText = item.summary[resourceNameKey];
+          } else if (resourceName) {
+            displayText = resourceName;
+          } else if (item.sourceName) {
+            displayText = item.sourceName;
+          } else if (item.title) {
+            displayText = item.title;
+          } else if (item.displayName) {
+            displayText = item.displayName;
+          } else if (alternateResourceName) {
+            displayText = alternateResourceName;
+          } else if (item.summary && item.summary[alternateResourceNameKey]) {
+            displayText = item.summary[alternateResourceNameKey];
+          } else if (item[resourceType+"Identifier"]) {
+            displayText = item[resourceType+"Identifier"];
+          } else if (item.name) {
+            displayText = item.name;
+          } else if (item.activityName) {
+            displayText = item.activityName;
+          } else if (item.displayDescription) {
+            displayText = item.displayDescription;
+          } else if (item.contentIdentifier) {
+            displayText = item.contentIdentifier;
+          } else if (item.bookName) {
+            displayText = item.bookName;
+          } else if (item.raceName) {
+            displayText = item.raceName;
+          } else if (item.bucketName) {
+            displayText = item.bucketName;
+          } else {
+            displayText = "Unknown";
+          }
+          -%>
 
-            if (displayText) {
-          %>
-
-          <p><%= displayText %></p>
+          <% if (displayText) { %>
+            <p><%= displayText %></p>
+          <% } %>
         </a>
-        
-        <% } %>
-        
-
-
-      </div>
-      </div>
+        </div> <!-- Internal grid item padding div -->
+      </div> <!-- Grid item container -->
     
-  <% }) %>
-  </div><!-- list -->
-</div>
-</div>
+  <% }); %> <!-- forEach -->
+</div><!-- list -->
+</div> <!-- anonymous div -->
+</div> <!-- container -->
 
 <div id="bottom-nav">
 <% if (Number(offset) >= Number(limit)) { %>
