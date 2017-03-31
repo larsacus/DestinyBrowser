@@ -2,7 +2,7 @@ var fs = require('fs');
 var manifest = {};
 
 var bungieDirectory = [__dirname, "..", "bungieData"].join("/");
-var baseRequest = require("../networking");
+var bungieRequest = require("../networking");
 var manifestFilePath = [bungieDirectory, "Manifest.json"].join("/");
 
 manifest.databaseZipURLFromManifest = function(manifestData = this.data) {
@@ -41,7 +41,7 @@ manifest.attemptCachedManifestLoad = function(completion) {
 
 manifest.refreshManifest = function() {
   // Download manifest
-  baseRequest("/Platform/Destiny/Manifest/", function (error, response, body) {
+  bungieRequest("/Platform/Destiny/Manifest/", function (error, response, body) {
     var jsonBody = JSON.parse(body);
 
     console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received 
