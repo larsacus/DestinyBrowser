@@ -1,5 +1,5 @@
 {
-  "name": "destiny-browser",
+  "name": "destiny-database-browser",
   "version": "1.0.0",
   "description": "Explore and browse the Bungie Destiny database files visually.",
   "main": "app.js",
