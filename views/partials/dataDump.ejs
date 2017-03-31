@@ -1,0 +1,15 @@
+<% if (item) { %>
+  <h3>Linked Data</h3>
+  <div class="json well">
+    <%
+    Object.keys(item).forEach(function (key) {
+      if (paths.includes(key) && key !== hashType) { %>
+      <div><a href="/<%=key%>/<%=item[key]%>"><%= key %>: <%= item[key] %></a></div>
+    <% }
+    });
+    %>
+  </div>
+<%}%>
+
+<h3 class="monospace"><%=table%>, <%=hashType%>=<%=objectId%></h3>
+<pre class="well"><%=JSON.stringify(item, null, 4)%></pre>
