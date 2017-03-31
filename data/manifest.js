@@ -27,7 +27,7 @@ manifest.databasePathFromManifest = function(manifestData = this.data) {
 manifest.attemptCachedManifestLoad = function(completion) {
   fs.open(this.manifestFilePath, 'r', function (err, fd) {
     if (err) { 
-      manifest.refreshManifest();
+      manifest.refreshManifest(completion);
     } else {
       console.log("File exists, using file at path \"" + manifest.manifestFilePath + "\"");
       fs.readFile(manifest.manifestFilePath, 'utf8', (err, data) => {
@@ -40,7 +40,7 @@ manifest.attemptCachedManifestLoad = function(completion) {
   });
 };
 
-manifest.refreshManifest = function() {
+manifest.refreshManifest = function(completion) {
   // Download manifest
   bungieRequest("/Platform/Destiny/Manifest/", function (error, response, body) {
     var jsonBody = JSON.parse(body);
@@ -50,13 +50,22 @@ manifest.refreshManifest = function() {
     if (error) {
       console.log('error:', error); // Print the error if one occurred 
     } else if (jsonBody.ErrorCode != 1) {
-      console.log("Error fetching URL: " + jsonBody.ErrorCode);
       console.log(jsonBody);
+      throw ("Error fetching URL: " + jsonBody.ErrorCode);
     } else {
       // Success downloading manifest
       manifest.saveManifestToDisk(body, function (err) {
+        if (err) { console.log("Error saving manifest to disk... " + err);}
         manifest.handleUpdatedManifest(jsonBody, function (err, sqlPath) {
-          // Do nothing?
+          if (err) {
+            console.log("Error fetching updated manifest: " + err);
+          } else if (sqlPath) {
+            console.log("Found updated manifest! Loading db...")
+          } else {
+            console.log("Did not find SQL database file and there was no error. Need to download...");
+          }
+
+          completion(err, sqlPath);
         });
       });
     }
@@ -76,7 +85,7 @@ manifest.handleUpdatedManifest = function(body, completion = null) {
     } else if(err.code == 'ENOENT') {
       // file does not exist
       // Download new file
-      console.log("File does not exist, fetching new file from manifest spec...");
+      console.log("File does not exist...");
       completion(null, null);
     } else {
       console.log('Some other error: ', err.code);

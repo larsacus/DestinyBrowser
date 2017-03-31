@@ -30,6 +30,7 @@ manifest.attemptCachedManifestLoad(function (err, dbPath) {
   if (err) {
     console.log("Error handling updated manifest: " + err);
   } else if (dbPath) {
+    console.log("Attempting to open existing database at path: " + dbPath);
     database.openDatabase(dbPath);
   } else {
     console.log(manifest);
