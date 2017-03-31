@@ -1,13 +1,13 @@
 body {
   color: #333;
-  background: #91B5D9;
+  background: repeating-linear-gradient( 0deg, hsla(210, 80%, 78%, 1.0), hsla(210, 83%, 81%, 1.0) 40%, hsla(210, 80%, 78%, 1.0) 100%);
   font-family: "Raleway";
 }
 
-.jumbotron {
+/*.jumbotron {
   background: #26537F;
   color: #eee;
-}
+}*/
 
 a {
   color: #333;
@@ -109,4 +109,17 @@ li img {
 #bottom-nav {
   text-align: center;
   padding: 1em;
+}
+
+footer {
+  margin-top: 10px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.attribution {
+  color: rgba(1,1,1,0.15);
+  font-size: 10px;
+  width: 50%;
+  margin: 5px auto;
 }
