@@ -1,7 +1,4 @@
 var sqlite3 = require('sqlite3').verbose();
-var url = require('url'); // built-in utility
-
-var tableDefinitions = require(".");
 
 var database = {};
 
@@ -17,46 +14,42 @@ database.openDatabase = function(sqlPath) {
   });
 }
 
-database.handleTableWithIdResponse = function(table, req, res) {
-  var sqlStatement = "SELECT * FROM " + table + " WHERE id = " + req.params.id + ";";
+database.handleTableWithIdResponse = function(table, id, fetchCompletion) {
+  var sqlStatement = "SELECT * FROM " + table + " WHERE id = " + id + ";";
 
   console.time(sqlStatement);
   this.db.get(sqlStatement, function (err, row) {
 
     console.timeEnd(sqlStatement);
     if (err) {
-      console.log("Error: " + err);
-      res.send("Error: " + err);
+      fetchCompletion(err, null);
     } else if (row) {
       var json = JSON.parse(row.json);
-      var jsonString = JSON.stringify(json);
-
-      res.send(jsonString);
-    } else if (Number(req.params.id) > 0) { // This is a hack for when json id's don't match sql column ids
+      
+      fetchCompletion(null, json);
+    } else if (Number(id) > 0) { // This is a hack for when json id's don't match sql column ids
       // Try again with a converted signed hash -(-original >>> 0)
-      const redirect = "/" + req.params.typeHash + "/" + (-(-Number(req.params.id) >>> 0));
-      console.log("Redirecting to \"" + redirect + "\"");
-      res.redirect(redirect);
+      const convertedId = (-(-Number(id) >>> 0));
+      // const redirect = "/" + req.params.typeHash + "/" + );
+      // console.log("Redirecting to \"" + redirect + "\"");
+      database.handleTableWithIdResponse(table, convertedId, fetchCompletion);
     } else {
-      res.send("No rows found for \"" + sqlStatement + "\"");
+      fetchCompletion('No rows found for "' + sqlStatement + '"', null);
     }
   });
 }
 
-database.handleTableResponse = function(table, hashType, req, res) {
+database.handleTableResponse = function(table, hashType, limit, offset, rowFetchCompletion) {
   var sqlStatements = [
       "SELECT * FROM " + table,
       ];
 
-  if (req.query.limit) {
-    sqlStatements.push("LIMIT " + req.query.limit);
-  } else {
-    res.redirect(req.url + "?limit=24");
-    return;
-  }
+  if (limit) {
+    sqlStatements.push("LIMIT " + limit);
+  } 
 
-  if (req.query.offset) {
-    sqlStatements.push("OFFSET " + req.query.offset);
+  if (offset) {
+    sqlStatements.push("OFFSET " + offset);
   }
 
   var sqlStatement = sqlStatements.join(" ") + ";";
@@ -64,34 +57,19 @@ database.handleTableResponse = function(table, hashType, req, res) {
 
   console.time(sqlStatement);
   this.db.all(sqlStatement, function (err, rows) {
-    if (err) {
-      console.log("Error: " + err);
-      res.send("Error: " + err);
-    } else {
+    var rowsJSON = [];
 
-      var rowsJSON = [];
+    if (!err) {
+
       rows.forEach(function (row) {
         var json = JSON.parse(row.json);
-        // var jsonString = JSON.stringify(json);
-        json.sqlId = row.id;
         rowsJSON.push(json);
       });
 
       console.timeEnd(sqlStatement);
-
-      console.log(url.parse(req.url).pathname);
-      
-      res.render("genericList", {
-        table: table,
-        items: rowsJSON,
-        offset: req.query.offset,
-        limit: req.query.limit,
-        hashType: hashType,
-        pageUrl: url.parse(req.url).pathname,
-        resourceType: url.parse(req.url).pathname.split("/").filter((item)=>{return item.length >0})[0].replace("Hash", ""),
-        descriptions: tableDefinitions.tableDescriptions,
-      }); 
     }
+
+    rowFetchCompletion(err, rowsJSON);
   });
 }
 

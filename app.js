@@ -11,6 +11,13 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
+var tableDefinitions = require("./data");
+
+app.use(function(req, res, next) {
+  res.locals.descriptions = tableDefinitions.tableDescriptions;
+  next();
+});
+
 // Use 'ejs' as the default rendering engine
 app.set("view engine", "ejs");
 
@@ -58,7 +65,7 @@ app.use(genericRoutes);
 // =========================
 //      START SERVER
 // =========================
-app.listen(process.env.PORT, process.env.IP, function() {
-// app.listen(3000, function() {
+// app.listen(process.env.PORT, process.env.IP, function() {
+app.listen(3000, function() {
   console.log("Destiny Explorer Server Initialized at localhost:3000!");
 });
