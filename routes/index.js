@@ -25,10 +25,18 @@ module.exports = function (database) {
       if (tailoredHashPages.includes(hashType)) {
         res.render(hashType, {
           item: obj,
+          table: table,
+          hashType: hashType,
+          objectId: objectId,
         });
       } else {
-        var jsonString = JSON.stringify(obj);
-        res.send(jsonString);
+        // var jsonString = JSON.stringify(obj);
+        res.render("defaultItem", {
+          item: obj,
+          table: table,
+          hashType: hashType,
+          objectId: objectId,
+        });
       }
     });
   });

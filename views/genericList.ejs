@@ -1,7 +1,7 @@
 <% include partials/header %>
 
 <div class="container">
-<h1><%= table %></h1>
+<h2>Browsing <%= table %>, items <%= offset %>-<%=items.count%></h2>
 <div>
 <div class="list">
   <% items.forEach(function (item) { %>

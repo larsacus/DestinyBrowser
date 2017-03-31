@@ -5,19 +5,21 @@
   <h1><img src="https://bungie.net<%=item.icon%>" style="height: 0.8em;position: relative; bottom: 0.05em;">&nbsp;<%=item.activityName%></h1>
   <p><%=item.activityDescription%></p>
   </div> <!-- jumbotron -->
-  <div class="json">
+
+  <h3>Linked Data</h3>
+  <div class="json well">
     <%
     Object.keys(item).forEach(function (key) {
       if (paths.includes(key)) { %>
       <div><a href="/<%=key%>/<%=item[key]%>"><%= key %>: <%= item[key] %></a></div>
-    <%} else {
-    %>
-      <div><%= key %>: <%= item[key] %> </div>
-    <% 
-      }
+    <% }
     });
     %>
   </div>
+
+  <h3 class="monospace"><%=table%>, <%=hashType%>=<%=objectId%></h3>
+  <pre class="well"><%=JSON.stringify(item, null, 4)%></pre>
+
 </div> <!-- container -->
 
 <% include partials/footer %>
