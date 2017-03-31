@@ -34,7 +34,7 @@ manifest.attemptCachedManifestLoad(function (err, dbPath) {
   } else {
     console.log(manifest);
 
-    var databaseZipURL = manifest.databaseZipURLFromManifest(body);
+    var databaseZipURL = manifest.databaseZipURLFromManifest();
 
     console.log(databaseZipURL);
     databaseRequest.downloadDatabase(databaseZipURL, function (err) {

@@ -1,9 +1,10 @@
 var fs = require('fs');
 var manifest = {};
 
-var bungieDirectory = [__dirname, "..", "bungieData"].join("/");
 var bungieRequest = require("../networking");
-var manifestFilePath = [bungieDirectory, "Manifest.json"].join("/");
+
+manifest.bungieDirectory = [__dirname, "..", "bungieData"].join("/");
+manifest.manifestFilePath = [manifest.bungieDirectory, "Manifest.json"].join("/");
 
 manifest.databaseZipURLFromManifest = function(manifestData = this.data) {
   var mobileWorldContentPaths = manifestData.Response.mobileWorldContentPaths.en;
@@ -18,18 +19,18 @@ manifest.databaseZipURLFromManifest = function(manifestData = this.data) {
 manifest.databasePathFromManifest = function(manifestData = this.data) {
   var mobileWorldContentPaths = this.databaseZipURLFromManifest(manifestData);
   var databaseName = mobileWorldContentPaths.split("/").pop();
-  sqlPath = [bungieDirectory, databaseName].join("/");
+  sqlPath = [this.bungieDirectory, databaseName].join("/");
 
   return sqlPath;
 }
 
 manifest.attemptCachedManifestLoad = function(completion) {
-  fs.open(manifestFilePath, 'r', function (err, fd) {
+  fs.open(this.manifestFilePath, 'r', function (err, fd) {
     if (err) { 
       manifest.refreshManifest();
     } else {
-      console.log("File exists, using file at path \"" + manifestFilePath + "\"");
-      fs.readFile(manifestFilePath, 'utf8', (err, data) => {
+      console.log("File exists, using file at path \"" + manifest.manifestFilePath + "\"");
+      fs.readFile(manifest.manifestFilePath, 'utf8', (err, data) => {
         if (err) throw err;
 
         const body = JSON.parse(data);
@@ -53,10 +54,10 @@ manifest.refreshManifest = function() {
       console.log(jsonBody);
     } else {
       // Success downloading manifest
-      manifest.saveManifestToDisk(body); // Why?
-
-      manifest.handleUpdatedManifest(jsonBody, function (err, sqlPath) {
-        // Do nothing?
+      manifest.saveManifestToDisk(body, function (err) {
+        manifest.handleUpdatedManifest(jsonBody, function (err, sqlPath) {
+          // Do nothing?
+        });
       });
     }
   });
@@ -84,14 +85,18 @@ manifest.handleUpdatedManifest = function(body, completion = null) {
   });
 }
 
-manifest.saveManifestToDisk = function(manifestContent) {
-  fs.writeFile(manifestFilePath, manifestContent.toString(), function(err) {
+manifest.saveManifestToDisk = function(manifestContent, completion) {
+  console.log("Writing file to disk at: " + this.manifestFilePath);
+
+  fs.writeFile(this.manifestFilePath, manifestContent.toString(), function(err) {
 
     if(err) {
       console.log(err);
     } else {
-      console.log("The file was saved to \""+ manifestFilePath +"\"!");
+      console.log("The file was saved to \""+ manifest.manifestFilePath +"\"!");
     }
+
+    completion(err);
   });
 }
 

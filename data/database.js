@@ -7,7 +7,7 @@ var database = {};
 
 database.openDatabase = function(sqlPath) {
   console.log("Path of SQL database: " + sqlPath);
-  database.db = new sqlite3.Database(sqlPath, sqlite3.OPEN_READONLY, function (dbErr) {
+  this.db = new sqlite3.Database(sqlPath, sqlite3.OPEN_READONLY, function (dbErr) {
 
     if (dbErr) {
       console.log("Error opening database: " + dbErr);
@@ -21,7 +21,7 @@ database.handleTableWithIdResponse = function(table, req, res) {
   var sqlStatement = "SELECT * FROM " + table + " WHERE id = " + req.params.id + ";";
 
   console.time(sqlStatement);
-  database.db.get(sqlStatement, function (err, row) {
+  this.db.get(sqlStatement, function (err, row) {
 
     console.timeEnd(sqlStatement);
     if (err) {
@@ -63,7 +63,7 @@ database.handleTableResponse = function(table, hashType, req, res) {
   console.log("Executing SQL: \"" + sqlStatement + "\"");
 
   console.time(sqlStatement);
-  database.db.all(sqlStatement, function (err, rows) {
+  this.db.all(sqlStatement, function (err, rows) {
     if (err) {
       console.log("Error: " + err);
       res.send("Error: " + err);
