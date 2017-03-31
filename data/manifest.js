@@ -26,7 +26,7 @@ manifest.databasePathFromManifest = function(manifestData = this.data) {
 manifest.attemptCachedManifestLoad = function(completion) {
   fs.open(manifestFilePath, 'r', function (err, fd) {
     if (err) { 
-      refreshManifest();
+      manifest.refreshManifest();
     } else {
       console.log("File exists, using file at path \"" + manifestFilePath + "\"");
       fs.readFile(manifestFilePath, 'utf8', (err, data) => {
