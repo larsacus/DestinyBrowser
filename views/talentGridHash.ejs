@@ -1,0 +1,46 @@
+<% include partials/header %>
+
+<title><%=table%>, <%=hashType%>=<%=objectId%></title>
+
+<div class="container">
+  <div class="jumbotron light banner" <% if (item.pgcrImage) { %>style="background-image: url(https://bungie.net<%= item.pgcrImage %>);"
+  <%}%>>
+  <div>
+
+  <% if (item.nodes && item.nodes.length > 0) { %>
+  <div id="skulls">
+  <hr>
+    <% item.nodes.forEach(function(node, index) { 
+      if (index != 0) {
+        %>
+        <hr>
+        <%
+      }
+      if (node.steps && node.steps.length > 0) {
+        node.steps.forEach(function(nodeStep) {
+          if (nodeStep.nodeStepName && nodeStep.nodeStepDescription) {
+          %>
+          <div style="min-height: 4em;">
+            <img src="https://bungie.net<%= nodeStep.icon %>" class="light" style="position: relative; top: -2em; height: 4em; margin-right: 1em">
+            <div style="display: inline-block;">
+              <h4><strong><%= nodeStep.nodeStepName %></strong></h4>
+              <h5><strong><%= nodeStep.interactionDescription %></strong></h5>
+              <div><%= nodeStep.nodeStepDescription %></div>
+            </div>
+          </div>
+          <%
+          }
+        });
+      }
+      %>
+  <% }); %>
+  </div>
+  <% } %>
+  </div>
+  </div> <!-- jumbotron -->
+
+  <% include partials/dataDump %>
+
+</div> <!-- container -->
+
+<% include partials/footer %>

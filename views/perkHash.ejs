@@ -1,0 +1,17 @@
+<% include partials/header %>
+
+<title><%=table%>, <%=hashType%>=<%=objectId%></title>
+
+<div class="container">
+  <div class="jumbotron light banner" <% if (item.pgcrImage) { %>style="background-image: url(https://bungie.net<%= item.pgcrImage %>);"
+  <%}%>>
+
+  <h1><img src="https://bungie.net<%= item.displayIcon %>" class="inline-image light">&nbsp;<%=item.displayName%></h1>
+  <p><%- item.displayDescription %></p>
+  </div> <!-- jumbotron -->
+
+  <% include partials/dataDump %>
+
+</div> <!-- container -->
+
+<% include partials/footer %>

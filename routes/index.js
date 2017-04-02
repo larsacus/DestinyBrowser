@@ -7,6 +7,9 @@ const middleware = require("../middleware");
 const tailoredHashPages = {
   activityHash: "activityHash",
   bundleHash: "activityHash",
+  perkHash: "perkHash",
+  statHash: "statHash",
+  talentGridHash: "talentGridHash",
 };
 
 module.exports = function (database) {
