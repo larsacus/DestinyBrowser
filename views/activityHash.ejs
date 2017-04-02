@@ -3,9 +3,24 @@
 <title><%=table%>, <%=hashType%>=<%=objectId%></title>
 
 <div class="container">
-  <div class="jumbotron light" style="background-size: cover; background-image: url(https://bungie.net<%= item.pgcrImage %>);">
-  <h1><img src="https://bungie.net<%=item.icon%>" style="height: 0.8em;position: relative; bottom: 0.05em;">&nbsp;<%=item.activityName%></h1>
-  <p><%=item.activityDescription%></p>
+  <div class="jumbotron light banner" <% if (item.bgcrImage) { %>style="background-image: url(https://bungie.net<%= item.pgcrImage %>);"<%}%>>
+  <div>
+
+<%
+ var iconSrc = item.icon.includes("missing_icon") ? item.releaseIcon : item.icon;
+-%>
+
+  <h1><img src="https://bungie.net<%=iconSrc%>" class="inline-image light">&nbsp;<%=item.activityName%></h1>
+  <p><%- item.activityDescription %></p>
+  <% if (item.skulls && item.skulls.length > 0) { %>
+  <div id="skulls">
+  <hr>
+    <% item.skulls.forEach(function(skull) { %>
+      <p><img src="https://bungie.net<%= skull.icon %>" class="inline-image light">&nbsp;&nbsp;<strong><%= skull.displayName %></strong> &mdash; <%= skull.description %></p>
+    <% }); %>
+  </div>
+  <% } %>
+  </div>
   </div> <!-- jumbotron -->
 
   <% include partials/dataDump %>

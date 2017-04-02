@@ -1,6 +1,6 @@
 body {
   color: #333;
-  background: repeating-linear-gradient( 0deg, hsla(210, 80%, 78%, 1.0), hsla(210, 83%, 81%, 1.0) 40%, hsla(210, 80%, 78%, 1.0) 100%);
+  /*background: repeating-linear-gradient( 0deg, hsla(210, 80%, 78%, 1.0), hsla(210, 83%, 81%, 1.0) 40%, hsla(210, 80%, 78%, 1.0) 100%);*/
   font-family: "Raleway";
 }
 
@@ -121,11 +121,33 @@ footer {
   text-align: center;
 }
 
+.inline-image {
+  height: 1.1em;
+  position: relative;
+  bottom: 0.1em;
+}
+
+img.light {
+  filter: drop-shadow(0px 0.1em 0.15em rgba(0,0,0,0.55));
+  -webkit-filter: drop-shadow(0px 0.1em 0.15em rgba(0,0,0,0.55));
+}
+
 .light {
   color: #eee;
-  text-shadow: 0px 4px 3px rgba(0,0,0,0.5),
-               0px 8px 13px rgba(0,0,0,0.2),
-               0px 18px 18px rgba(0,0,0,0.15);
+  text-shadow: 0px 0.2em 0.15em rgba(0,0,0,0.75),
+               0px 0.3em 0.75em rgba(0,0,0,0.2),
+               0px 0.4em 1.15em rgba(0,0,0,0.15);
+}
+
+.jumbotron.banner p {
+  white-space: pre-wrap;
+}
+
+.jumbotron.banner {
+  background: #26537F;
+  background-size: cover;
+  padding-top: 75px;
+  padding-bottom: 75px;
 }
 
 .monospace {
@@ -136,5 +158,6 @@ footer {
   color: rgba(1,1,1,0.15);
   font-size: 10px;
   width: 50%;
+  min-width: 300px;
   margin: 5px auto;
 }

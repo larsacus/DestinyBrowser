@@ -4,9 +4,10 @@ var url = require('url'); // built-in utility
 
 const tableDefinitions = require("../data");
 const middleware = require("../middleware");
-const tailoredHashPages = [
-  "activityHash",
-];
+const tailoredHashPages = {
+  activityHash: "activityHash",
+  bundleHash: "activityHash",
+};
 
 module.exports = function (database) {
 
@@ -22,8 +23,8 @@ module.exports = function (database) {
 
     // "/:typeHash/:id"
     database.handleTableWithIdResponse(table, objectId, function (err, obj) {
-      if (tailoredHashPages.includes(hashType)) {
-        res.render(hashType, {
+      if (Object.keys(tailoredHashPages).includes(hashType)) {
+        res.render(tailoredHashPages[hashType], {
           item: obj,
           table: table,
           hashType: hashType,
@@ -46,7 +47,7 @@ module.exports = function (database) {
     const hashType = req.params.typeHash;
     const table = tableDefinitions.tableForHashType(hashType)
     const limit = req.query.limit;
-    const offset = req.query.offset;
+    const offset = req.query.offset || 0;
 
     if (!limit) {
       res.redirect(req.url + "?limit=24");
