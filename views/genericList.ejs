@@ -1,7 +1,7 @@
 <% include partials/header %>
 
 <div class="container">
-<h2>Browsing <%= table %>, items <%= offset %>-<%=items.count%></h2>
+<h2>Browsing <%= table %>, items <%= offset %>-<%= (Number(offset)+Number(items.length)) %></h2>
 <div>
 <div class="list">
   <% items.forEach(function (item) { %>
@@ -17,7 +17,7 @@
             }
           -%>
 
-          <a href="<%= hashType %>/<%= item.hash %>">
+          <a href="<%= href %>">
 
           <%
           var tries = ["icon", "releaseIcon", "displayIcon", (resourceType + "Icon"), "iconPath", "secondaryIcon"];
