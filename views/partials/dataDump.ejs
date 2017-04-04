@@ -1,5 +1,5 @@
 <% if (item) { %>
-  <h3>Linked Data</h3>
+  <h4>Linked Data</h4>
   <div class="json well">
     <%
     Object.keys(item).forEach(function (key) {
@@ -11,5 +11,5 @@
   </div>
 <%}%>
 
-<h3 class="monospace"><%=table%>, id=<%=objectId%></h3>
+<h4 class="monospace" style="overflow: hidden;"><%=table%>, id=<%=objectId%></h4>
 <pre class="well"><%=JSON.stringify(item, null, 4)%></pre>
