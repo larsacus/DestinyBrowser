@@ -11,28 +11,36 @@
   <div id="skulls">
   <hr>
     <% item.nodes.forEach(function(node, index) { 
-      if (index != 0) {
-        %>
-        <hr>
-        <%
-      }
       if (node.steps && node.steps.length > 0) {
-        node.steps.forEach(function(nodeStep) {
-          if (nodeStep.nodeStepName && nodeStep.nodeStepDescription) {
-          %>
-          <div style="display: flex;">
-          <div style="width: 50px; margin-right: 0.5em; padding-top: 0.5em;">
-            <img src="https://bungie.net<%= nodeStep.icon %>" class="light" style="width: 100%">
-            </div>
-            <div style="display: inline-block;">
-              <h4><strong><%= nodeStep.nodeStepName %></strong></h4>
-              <h5><strong><%= nodeStep.interactionDescription %></strong></h5>
-              <div><%= nodeStep.nodeStepDescription %></div>
-            </div>
-          </div>
-          <%
-          }
+        
+        var steps = node.steps.filter(function (nodeStep) {
+          return (nodeStep.nodeStepName && nodeStep.nodeStepDescription);
         });
+
+        if (steps.length > 0) {
+          if (index != 0) {
+            %>
+            <hr>
+            <%
+          }
+
+          steps.forEach(function(nodeStep) {
+            if (nodeStep.nodeStepName && nodeStep.nodeStepDescription) {
+            %>
+            <div style="display: flex;">
+            <div style="width: 50px; margin-right: 0.5em; padding-top: 0.5em;">
+              <img src="https://bungie.net<%= nodeStep.icon %>" class="light" style="width: 100%">
+              </div>
+              <div style="display: inline-block;">
+                <h4><strong><%= nodeStep.nodeStepName %></strong></h4>
+                <h5><strong><%= nodeStep.interactionDescription %></strong></h5>
+                <div><%= nodeStep.nodeStepDescription %></div>
+              </div>
+            </div>
+            <%
+            }
+          });
+        }
       }
       %>
   <% }); %>
