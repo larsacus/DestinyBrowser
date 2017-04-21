@@ -48,7 +48,7 @@ manifest.refreshManifest = function(completion) {
     console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received 
 
     if (error) {
-      console.log('error:', error); // Print the error if one occurred 
+      console.log('error:', error); // Print the error if one occurred
     } else if (jsonBody.ErrorCode != 1) {
       console.log(jsonBody);
       throw ("Error fetching URL: " + jsonBody.ErrorCode);

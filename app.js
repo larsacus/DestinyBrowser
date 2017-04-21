@@ -31,30 +31,38 @@ var genericRoutes = require("./routes")(database);
 var databaseRequest = require("./networking/database");
 
 // Force download a remote manifest
-// manifest.refreshManifest();
+manifest.refreshManifest(function (err, sqlPath) {
+  if (err || !sqlPath) {
+    console.log("Error fetching manifest from network, attempting cached refresh: " + err);
 
-// Attempt to find locally cached manifest
-manifest.attemptCachedManifestLoad(function (err, dbPath) {
-  if (err) {
-    console.log("Error handling updated manifest: " + err);
-  } else if (dbPath) {
-    console.log("Attempting to open existing database at path: " + dbPath);
-    database.openDatabase(dbPath);
-  } else {
-    console.log(manifest);
-
-    var databaseZipURL = manifest.databaseZipURLFromManifest();
-
-    console.log(databaseZipURL);
-    databaseRequest.downloadDatabase(databaseZipURL, function (err) {
+    // Attempt to find locally cached manifest
+    manifest.attemptCachedManifestLoad(function (err, dbPath) {
       if (err) {
-        console.log("Error downloading database: " + err);
+        console.log("Error handling updated manifest: " + err);
+      } else if (dbPath) {
+        console.log("Attempting to open existing database at path: " + dbPath);
+        database.openDatabase(dbPath);
       } else {
-        // Open up a new database using unzipped file
-        var sqlPath = manifest.databasePathFromManifest();
-        database.openDatabase(sqlPath);
+        console.log(manifest);
+
+        var databaseZipURL = manifest.databaseZipURLFromManifest();
+
+        console.log(databaseZipURL);
+        databaseRequest.downloadDatabase(databaseZipURL, function (err) {
+          if (err) {
+            console.log("Error downloading database: " + err);
+          } else {
+            // Open up a new database using unzipped file
+            var sqlPath = manifest.databasePathFromManifest();
+            database.openDatabase(sqlPath);
+          }
+        });
       }
     });
+  } else {
+    // Open up a new database using unzipped file
+    console.log("Opening database with path: " + sqlPath);
+    database.openDatabase(sqlPath);
   }
 });
 
